@@ -1,0 +1,30 @@
+{
+  "title": "Camaleon Post Clone",
+  "descr": "Permit to clone a post content by a single link. More info: <a target='_blank' href='http://camaleon.tuzitio.com/store/plugins/post_clone'>here.</a>",
+  "version": "0.1",
+  "key": "camaleon_post_clone",
+  "helpers": [
+    "Plugins::CamaleonPostClone::MainHelper"
+  ],
+  "hooks": {
+    "on_active": [
+      "camaleon_post_clone_on_active"
+    ],
+    "on_inactive": [
+      "camaleon_post_clone_on_inactive"
+    ],
+    "on_upgrade": [
+      "camaleon_post_clone_on_upgrade"
+    ],
+    "new_post": [
+      "camaleon_post_clone_new_post"
+    ],
+    "edit_post": [
+      "camaleon_post_clone_edit_post"
+    ],
+    "plugin_options":[
+      "camaleon_post_clone_plugin_options"
+    ]
+    //here you can add all your hooks (read documentation)
+  }
+}
