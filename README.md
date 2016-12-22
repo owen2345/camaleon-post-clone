@@ -15,3 +15,4 @@ bundle install
 ```
 * Restart Server and activate the plugin: Admin -> plugins -> Camaleon Post Clone
 * Configure the plugin by 'Settings' below the plugin title
+* Edit any content and clone with the option in the right bar
