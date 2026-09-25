@@ -27,14 +27,16 @@ def cama_admin_user(username = 'admin')
   CamaManager.get_user_class_name.constantize.find_by!(username: username)
 end
 
-# A user on @site whose role holds exactly the given manager grants (permission meta). An empty grants
-# hash leaves the meta unset, which camaleon_cms's Ability reads identically to an empty grant, so no
-# needless meta rows are written. The role stores its slug parameterized, and Ability resolves a
-# user's role by that stored slug.
-def user_with_manager_grants(manager_meta, slug, site: @site)
+# A user on @site whose role holds exactly the given manager grants (permission meta), plus optional
+# post-type rights (post_type_meta, e.g. { edit: [post_type.id.to_s] }). An empty grants hash leaves
+# the meta unset, which camaleon_cms's Ability reads identically to an empty grant, so no needless
+# meta rows are written. The role stores its slug parameterized, and Ability resolves a user's role
+# by that stored slug.
+def user_with_manager_grants(manager_meta, slug, site: @site, post_type_meta: nil)
   raise ArgumentError, 'user_with_manager_grants needs a site: call it from an example under init_site' if site.nil?
 
   role = site.user_roles.create!(name: slug, slug: slug)
   role.set_meta("_manager_#{site.id}", manager_meta) if manager_meta.present?
+  role.set_meta("_post_type_#{site.id}", post_type_meta) if post_type_meta.present?
   create(:user, role: role.slug, site: site)
 end

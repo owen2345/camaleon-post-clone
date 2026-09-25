@@ -18,6 +18,17 @@ RSpec.describe 'the links the plugin adds to the admin' do
     expect(response.body).to include("href='/admin/plugins/camaleon_post_clone/clone/#{@post.id}'")
   end
 
+  it 'shows no clone link to a user who cannot create posts of the type' do
+    editor = user_with_manager_grants({ 'plugins' => 1 }, 'plugins-editor',
+                                      post_type_meta: { edit_other: [@post.post_type_id.to_s] })
+    sign_in_as(editor, site: @site)
+
+    get "/admin/post_type/#{@post.post_type_id}/posts/#{@post.id}/edit"
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).not_to include('/admin/plugins/camaleon_post_clone/clone/')
+  end
+
   it 'adds no clone link to the new post form' do
     get "/admin/post_type/#{@post.post_type_id}/posts/new"
 
