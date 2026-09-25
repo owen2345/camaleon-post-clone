@@ -32,6 +32,10 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     # on the cloner's `edit` right, not on the source author's identity).
     clone.user_id = cama_current_user.id
     clone.status = 'pending' if @plugin.get_field_value('plugin_clone_save_as_pending')
+    # Core holds every path to `published` to the publish right (create, update, restore); a copied
+    # published status is held to it too, as core downgrades it, so cloning cannot publish for a user
+    # who cannot.
+    clone.status = 'pending' if clone.published? && cannot?(:publish_post, post.post_type)
     clone.save!
     flash[:notice] = t('plugin.post_clone.message.content_cloned').to_s
     redirect_to clone.decorate.the_edit_url

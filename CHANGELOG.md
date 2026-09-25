@@ -4,7 +4,7 @@
 
 ### Security: cloning needs the editor's rights on the post
 
-Any user with the `plugins` permission could clone any post of the site, other authors' drafts included; cloning now also needs the right to edit the source post and to create posts of its type, and the editor shows the clone link only to such a user. The clone is the cloner's own post, as a created post is. [#4](https://github.com/owen2345/camaleon-post-clone/pull/4).
+Any user with the `plugins` permission could clone any post of the site, other authors' drafts included; cloning now also needs the right to edit the source post and to create posts of its type, and the editor shows the clone link only to such a user. The clone is the cloner's own post, as a created post is. A published post clones as pending for a user who cannot publish posts of its type, as core holds every other path to `published` to that right. [#4](https://github.com/owen2345/camaleon-post-clone/pull/4).
 
 ### Fix: cloning keeps the title translations, and the custom fields option works
 
