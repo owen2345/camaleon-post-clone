@@ -69,7 +69,6 @@ RSpec.describe 'cloning a post' do
   end
 
   it 'copies the custom field values when that option is on' do
-    pending 'the plugin clones field_values, an association camaleon_cms 2.8.0 renamed to custom_field_values'
     group = @post.post_type.add_custom_field_group({ name: 'Extra', slug: 'extra' })
     group.add_manual_field({ name: 'Subtitle', slug: 'subtitle' }, { field_key: 'text_box' })
     field = group.fields.first
