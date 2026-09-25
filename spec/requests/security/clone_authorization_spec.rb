@@ -65,7 +65,7 @@ RSpec.describe 'cloning a post is authorized on the source post' do
   end
 
   it 'clones a published post as pending for a user who cannot publish posts of its type' do
-    @post.update!(status: 'published')
+    @post.update!(status: 'published', published_at: 1.year.ago)
     editor = user_with_manager_grants({ 'plugins' => 1 }, 'plugins-editor',
                                       post_type_meta: { edit: [post_type.id.to_s], edit_publish: [post_type.id.to_s] })
     sign_in_as(editor, site: @site)
@@ -74,6 +74,7 @@ RSpec.describe 'cloning a post is authorized on the source post' do
 
     expect(new_posts.count).to eq(1)
     expect(new_posts.first.status).to eq('pending')
+    expect(new_posts.first.published_at).to be_nil
     expect(response).to redirect_to(%r{/admin/post_type/#{post_type.id}/posts/#{new_posts.first.id}/edit\z})
   end
 

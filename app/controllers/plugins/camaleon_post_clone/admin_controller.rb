@@ -31,11 +31,7 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     # The clone is the cloner's own post, as a post the editor creates is (`update` on it then depends
     # on the cloner's `edit` right, not on the source author's identity).
     clone.user_id = cama_current_user.id
-    clone.status = 'pending' if @plugin.get_field_value('plugin_clone_save_as_pending')
-    # Core holds every path to `published` to the publish right (create, update, restore); a copied
-    # published status is held to it too, as core downgrades it, so cloning cannot publish for a user
-    # who cannot.
-    clone.status = 'pending' if clone.published? && cannot?(:publish_post, post.post_type)
+    hold_status(clone)
     clone.save!
     flash[:notice] = t('plugin.post_clone.message.content_cloned').to_s
     redirect_to clone.decorate.the_edit_url
@@ -47,5 +43,18 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     @plugin.set_field_values(params[:field_options])
     flash[:notice] = t('plugin.post_clone.message.settings_saved').to_s
     redirect_to action: :settings
+  end
+
+  private
+
+  # The clone's status: pending when the plugin option says so, and pending instead of a copied
+  # `published` for a user without the publish right, as core downgrades it on create, update and
+  # restore, so cloning cannot publish for a user who cannot. A clone not published now must not
+  # carry the source's publish date: the post stamps `published_at` on its own publish only when the
+  # column is blank.
+  def hold_status(clone)
+    clone.status = 'pending' if @plugin.get_field_value('plugin_clone_save_as_pending')
+    clone.status = 'pending' if clone.published? && cannot?(:publish_post, clone.post_type)
+    clone.published_at = nil unless clone.published?
   end
 end
