@@ -7,7 +7,7 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
 
   def clone # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     i = %i[term_relationships metas]
-    i << :field_values if @plugin.get_field_value('plugin_clone_custom_fields')
+    i << :custom_field_values if @plugin.get_field_value('plugin_clone_custom_fields')
     post = current_site.posts.find(params[:id])
     clone = post.deep_clone(include: i)
     clone.post_type = post.post_type
@@ -15,7 +15,7 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     titles = clone.title.translations
     slugs.each do |k, v|
       slugs[k] = current_site.get_valid_post_slug(v)
-      titles[k] = "#{v} (clone)"
+      titles[k] = "#{titles[k]} (clone)"
     end
     if slugs.empty?
       clone.slug = current_site.get_valid_post_slug(clone.slug)
