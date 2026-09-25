@@ -41,6 +41,10 @@ module Plugins::CamaleonPostClone::MainHelper
   def camaleon_post_clone_new_post(args); end
 
   def camaleon_post_clone_edit_post(args)
+    # Only a user who can clone the post gets the link: the clone endpoint needs the plugin permission
+    # and the right to create posts of this type (editing the post is already granted here).
+    return unless can?(:manage, :plugins) && can?(:create_post, args[:post_type])
+
     args[:extra_settings] <<
       "<div class=''><label class='control-label'>#{t('camaleon_cms.admin.post.clone_content')}: </label> " \
       "<a href='#{admin_plugins_camaleon_post_clone_clone_path(id: args[:post].id)}'>" \
