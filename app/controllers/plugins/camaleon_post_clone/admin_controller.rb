@@ -32,9 +32,16 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     # on the cloner's `edit` right, not on the source author's identity).
     clone.user_id = cama_current_user.id
     hold_status(clone)
-    clone.save!
-    flash[:notice] = t('plugin.post_clone.message.content_cloned').to_s
-    redirect_to clone.decorate.the_edit_url
+    # The clone is saved as the cloner's post, so core scans its content for a cloner without the
+    # unfiltered-content right, as for a post they create; a refusal is answered as a refused save is,
+    # not raised out of this GET as a 500.
+    if clone.save
+      flash[:notice] = t('plugin.post_clone.message.content_cloned').to_s
+      redirect_to clone.decorate.the_edit_url
+    else
+      flash[:error] = clone.errors.full_messages.to_sentence
+      redirect_to post.decorate.the_edit_url
+    end
   end
 
   def settings; end
