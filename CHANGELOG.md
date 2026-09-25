@@ -4,7 +4,7 @@
 
 ### Security: the settings form stores only the plugin's own settings
 
-Saving the plugin settings stored a value under any submitted slug and answered 500 to a malformed `field_options`; the values are now confined to the two settings the plugin registers, as camaleon_cms's own admin forms are. Admin-gated before and after. [#3](https://github.com/owen2345/camaleon-post-clone/pull/3).
+Saving the plugin settings stored a value under any submitted slug and answered 500 to a malformed `field_options`; the values are now confined to the settings registered for plugins, as camaleon_cms's own admin forms confine theirs; the checkboxes the settings form submits as `values[]` are still stored. Admin-gated before and after. [#3](https://github.com/owen2345/camaleon-post-clone/pull/3).
 
 ### Fix: cloning keeps the title translations, and the custom fields option works
 
