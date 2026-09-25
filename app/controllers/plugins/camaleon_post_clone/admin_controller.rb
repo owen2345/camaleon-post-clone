@@ -5,10 +5,15 @@
 class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAdminController
   include Plugins::CamaleonPostClone::MainHelper
 
-  # The statuses the post editor offers. A source outside them is a trashed post or an autosave
-  # buffer (`draft_child`, a draft the editor keeps under its parent, saved into the parent on update):
+  # The statuses the post editor offers: core's own list where it carries one (camaleon_cms after
+  # 2.9.4), else the same literal. A source outside them is a trashed post or an autosave buffer
+  # (`draft_child`, a draft the editor keeps under its parent, saved into the parent on update):
   # neither is a status a new post may be born with.
-  EDITOR_STATUSES = %w[published pending draft].freeze
+  EDITOR_STATUSES = if CamaleonCms::Post.const_defined?(:EDITOR_STATUSES)
+                      CamaleonCms::Post::EDITOR_STATUSES
+                    else
+                      %w[published pending draft].freeze
+                    end
 
   def clone # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     i = %i[term_relationships metas]
