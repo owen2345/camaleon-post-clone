@@ -53,4 +53,14 @@ RSpec.describe 'cloning a post is authorized on the source post' do
     expect(new_posts.count).to eq(1)
     expect(response).to redirect_to(%r{/admin/post_type/#{post_type.id}/posts/#{new_posts.first.id}/edit\z})
   end
+
+  it 'makes the clone the cloner\'s own post, as creating one does' do
+    author = user_with_manager_grants({ 'plugins' => 1 }, 'plugins-author',
+                                      post_type_meta: { edit: [post_type.id.to_s], edit_other: [post_type.id.to_s] })
+    sign_in_as(author, site: @site)
+
+    get clone_path
+
+    expect(new_posts.first.user_id).to eq(author.id)
+  end
 end

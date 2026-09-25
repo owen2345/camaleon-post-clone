@@ -28,6 +28,9 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
       clone.slug = slugs.to_translate
       clone.title = titles.to_translate
     end
+    # The clone is the cloner's own post, as a post the editor creates is (`update` on it then depends
+    # on the cloner's `edit` right, not on the source author's identity).
+    clone.user_id = cama_current_user.id
     clone.status = 'pending' if @plugin.get_field_value('plugin_clone_save_as_pending')
     clone.save!
     flash[:notice] = t('plugin.post_clone.message.content_cloned').to_s
