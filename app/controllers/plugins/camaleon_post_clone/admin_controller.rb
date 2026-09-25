@@ -49,12 +49,12 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
 
   # The clone's status: pending when the plugin option says so, and pending instead of a copied
   # `published` for a user without the publish right, as core downgrades it on create, update and
-  # restore, so cloning cannot publish for a user who cannot. A clone not published now must not
-  # carry the source's publish date: the post stamps `published_at` on its own publish only when the
-  # column is blank.
+  # restore, so cloning cannot publish for a user who cannot. The clone never carries the source's
+  # publish date: the post stamps `published_at` when it is saved published with the column blank, so
+  # a clone published now is dated now, and one published later is dated then, as a created post is.
   def hold_status(clone)
     clone.status = 'pending' if @plugin.get_field_value('plugin_clone_save_as_pending')
     clone.status = 'pending' if clone.published? && cannot?(:publish_post, clone.post_type)
-    clone.published_at = nil unless clone.published?
+    clone.published_at = nil
   end
 end

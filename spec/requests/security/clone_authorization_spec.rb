@@ -78,8 +78,8 @@ RSpec.describe 'cloning a post is authorized on the source post' do
     expect(response).to redirect_to(%r{/admin/post_type/#{post_type.id}/posts/#{new_posts.first.id}/edit\z})
   end
 
-  it 'keeps a published clone published for a user who can publish posts of its type' do
-    @post.update!(status: 'published')
+  it 'keeps a published clone published, dated now, for a user who can publish posts of its type' do
+    @post.update!(status: 'published', published_at: 1.year.ago)
     publisher = user_with_manager_grants({ 'plugins' => 1 }, 'plugins-publisher',
                                          post_type_meta: { edit: [post_type.id.to_s], edit_other: [post_type.id.to_s],
                                                            publish: [post_type.id.to_s] })
@@ -88,5 +88,6 @@ RSpec.describe 'cloning a post is authorized on the source post' do
     get clone_path
 
     expect(new_posts.first.status).to eq('published')
+    expect(new_posts.first.published_at).to be_within(1.minute).of(Time.current)
   end
 end
