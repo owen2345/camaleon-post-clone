@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Security: the settings form stores only the plugin's own settings
+
+Saving the plugin settings stored a value under any submitted slug and answered 500 to a malformed `field_options`; the values are now confined to the two settings the plugin registers, as camaleon_cms's own admin forms are. Admin-gated before and after. [#3](https://github.com/owen2345/camaleon-post-clone/pull/3).
+
 ### Fix: cloning keeps the title translations, and the custom fields option works
 
 A translated post cloned with the plugin got each title translation replaced by the slug translation plus " (clone)"; the title translation now gets the suffix. With "Clone custom fields" enabled, cloning raised because the plugin named `field_values`, an association camaleon_cms 2.8.0 renamed to `custom_field_values`; the custom field values are copied again. [#2](https://github.com/owen2345/camaleon-post-clone/pull/2).
