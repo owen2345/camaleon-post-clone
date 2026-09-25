@@ -4,6 +4,8 @@
 # holding the two options its on_active hook registers.
 class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAdminController
   include Plugins::CamaleonPostClone::MainHelper
+  # Confines a submitted field_options to the slugs the plugin registered (see settings_save).
+  include CamaleonCms::Admin::CustomFieldsConcern
 
   def clone # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     i = %i[term_relationships metas]
@@ -33,7 +35,8 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
   def settings; end
 
   def settings_save
-    @plugin.set_field_values(params[:field_options])
+    # Only the plugin's registered settings are stored, as camaleon_cms's own admin controllers do.
+    @plugin.set_field_values(cama_permitted_field_options('Plugin')) if params[:field_options].present?
     flash[:notice] = t('plugin.post_clone.message.settings_saved').to_s
     redirect_to action: :settings
   end

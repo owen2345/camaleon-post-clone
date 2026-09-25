@@ -72,8 +72,8 @@ RSpec.describe 'cloning a post' do
     group = @post.post_type.add_custom_field_group({ name: 'Extra', slug: 'extra' })
     group.add_manual_field({ name: 'Subtitle', slug: 'subtitle' }, { field_key: 'text_box' })
     field = group.fields.first
-    @post.set_field_values({ group.id.to_s => { 'subtitle' => { 'id' => field.id.to_s,
-                                                                'values' => ['Sub'] } } }.with_indifferent_access)
+    values = { group.id.to_s => { 'subtitle' => { 'id' => field.id.to_s, 'values' => { '0' => 'Sub' } } } }
+    @post.set_field_values(values.with_indifferent_access)
     enable_plugin_setting(plugin, 'plugin_clone_custom_fields')
 
     get clone_path
