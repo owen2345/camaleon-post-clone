@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Security: cloning needs the editor's rights on the post
+
+Any user with the `plugins` permission could clone any post of the site, other authors' drafts included; cloning now also needs the right to edit the source post and to create posts of its type, and the editor shows the clone link only to such a user. [#4](https://github.com/owen2345/camaleon-post-clone/pull/4).
+
 ### Fix: cloning keeps the title translations, and the custom fields option works
 
 A translated post cloned with the plugin got each title translation replaced by the slug translation plus " (clone)"; the title translation now gets the suffix. With "Clone custom fields" enabled, cloning raised because the plugin named `field_values`, an association camaleon_cms 2.8.0 renamed to `custom_field_values`; the custom field values are copied again. [#2](https://github.com/owen2345/camaleon-post-clone/pull/2).
