@@ -38,14 +38,16 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     clone.user_id = cama_current_user.id
     hold_status(clone, post)
     # The clone is saved as the cloner's post, so core scans its content for a cloner without the
-    # unfiltered-content right, as for a post they create; a refusal is answered as a refused save is,
-    # not raised out of this GET as a 500.
-    if clone.save
+    # unfiltered-content right, as for a post they create, and the copied summary is scanned here as
+    # the post editor scans a submitted one; a refusal is answered as a refused save is, not raised
+    # out of this GET as a 500.
+    refusal = summary_refusal(post) || save_refusal(clone)
+    if refusal
+      flash[:error] = refusal
+      redirect_to post.decorate.the_edit_url
+    else
       flash[:notice] = t('plugin.post_clone.message.content_cloned').to_s
       redirect_to clone.decorate.the_edit_url
-    else
-      flash[:error] = clone.errors.full_messages.to_sentence
-      redirect_to post.decorate.the_edit_url
     end
   end
 
@@ -58,6 +60,29 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
   end
 
   private
+
+  # `meta[summary]` is content the default theme renders verbatim, and a meta row passes no model
+  # validation, so core's post editor scans a submitted summary in the controller for a user without
+  # the unfiltered-content right. The clone copies the source's summary meta as stored, so it is held
+  # to the same detector, allowlist and messages here; a right holder's clone copies it verbatim.
+  def summary_refusal(source)
+    summary = source.get_meta('summary')
+    return if summary.blank? || can?(:post_content_unfiltered_html, source.post_type)
+
+    if CamaleonCms::UnsafeMarkup.too_large?(summary)
+      "meta[summary] #{cama_t('camaleon_cms.admin.post.message.content_too_large')}"
+    elsif CamaleonCms::UnsafeMarkup.unsafe_html?(summary, tags: CamaleonCms::Post::CONTENT_ALLOWED_TAGS,
+                                                          attributes: CamaleonCms::Post::CONTENT_ALLOWED_ATTRIBUTES)
+      "meta[summary] #{cama_t('camaleon_cms.admin.post.message.content_rejected')}"
+    end
+  end
+
+  # Why the clone's save was refused, or nil once it is saved.
+  def save_refusal(clone)
+    return if clone.save
+
+    clone.errors.full_messages.to_sentence
+  end
 
   # The clone's status: the source's when the editor offers it, else pending (a trashed source), and a
   # buffer's clone is a draft of its own, cut from the buffer's parent. Then pending when the plugin
