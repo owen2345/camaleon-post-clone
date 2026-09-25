@@ -49,7 +49,6 @@ RSpec.describe 'cloning a post' do
   end
 
   it 'suffixes every translation of a translated title and slug' do
-    pending 'the plugin suffixes the slug translation into the title instead of the title translation'
     @post.update!(title: '<!--:en-->Sample<!--:--><!--:es-->Muestra<!--:-->',
                   slug: '<!--:en-->sample<!--:--><!--:es-->muestra<!--:-->')
 

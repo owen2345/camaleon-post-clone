@@ -15,7 +15,7 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     titles = clone.title.translations
     slugs.each do |k, v|
       slugs[k] = current_site.get_valid_post_slug(v)
-      titles[k] = "#{v} (clone)"
+      titles[k] = "#{titles[k]} (clone)"
     end
     if slugs.empty?
       clone.slug = current_site.get_valid_post_slug(clone.slug)
