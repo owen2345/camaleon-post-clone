@@ -22,9 +22,8 @@
     "edit_post": [
       "camaleon_post_clone_edit_post"
     ],
-    "plugin_options":[
+    "plugin_options": [
       "camaleon_post_clone_plugin_options"
     ]
-    //here you can add all your hooks (read documentation)
   }
 }
