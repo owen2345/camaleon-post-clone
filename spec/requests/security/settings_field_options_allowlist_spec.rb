@@ -28,6 +28,15 @@ RSpec.describe 'saving the plugin settings stores only its registered fields' do
     expect(plugin.custom_field_values.pluck(:custom_field_slug)).to contain_exactly('plugin_clone_save_as_pending')
   end
 
+  it 'stores a checkbox the form submits as values[], the shape the allow-list alone drops' do
+    post settings_path, params: { field_options: { group.id.to_s => {
+      'plugin_clone_save_as_pending' => { 'id' => field.id.to_s, 'values' => ['1'] }
+    } } }
+
+    expect(response).to redirect_to(settings_path)
+    expect(plugin.custom_field_values.pluck(:custom_field_slug, :value)).to eq([%w[plugin_clone_save_as_pending 1]])
+  end
+
   it 'answers a scalar field_options without storing anything' do
     post settings_path, params: { field_options: 'forged' }
 
