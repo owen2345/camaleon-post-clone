@@ -78,4 +78,34 @@ RSpec.describe 'cloning content the scan gates for the cloner' do
       expect(new_posts.first.get_meta('summary')).to eq(script)
     end
   end
+
+  describe 'a gated custom field value' do
+    before do
+      group = post_type.add_custom_field_group({ name: 'Extra', slug: 'extra' })
+      group.add_manual_field({ name: 'Body', slug: 'body' }, { field_key: 'editor' })
+      @post.custom_field_values.new(custom_field_id: group.fields.first.id, custom_field_slug: 'body', value: script)
+           .unfiltered_value!.save!
+      enable_plugin_setting(@site.plugins.find_by!(slug: 'camaleon_post_clone'), 'plugin_clone_custom_fields')
+    end
+
+    it 'refuses the clone with a flash naming the field for a cloner without the unfiltered right' do
+      sign_in_as(author, site: @site)
+
+      get clone_path
+
+      expect(response).to redirect_to(%r{/admin/post_type/#{post_type.id}/posts/#{@post.id}/edit\z})
+      expect(flash[:error])
+        .to include(I18n.t('camaleon_cms.admin.custom_field.message.value_rejected_html', slug: 'body'))
+      expect(new_posts).to be_empty
+    end
+
+    it 'clones the value verbatim for a cloner with the unfiltered right' do
+      sign_in_as(trusted, site: @site)
+
+      get clone_path
+
+      expect(new_posts.count).to eq(1)
+      expect(new_posts.first.get_field_value('body')).to eq(script)
+    end
+  end
 end

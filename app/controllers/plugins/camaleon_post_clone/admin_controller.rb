@@ -77,11 +77,15 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     end
   end
 
-  # Why the clone's save was refused, or nil once it is saved.
+  # Why the clone's save was refused, or nil once it is saved. A copied custom field value core's
+  # gate refuses fails the save through the association's generic "is invalid"; the value's own
+  # message, naming the field and the reason as the post editor's refusal does, replaces it.
   def save_refusal(clone)
     return if clone.save
 
-    clone.errors.full_messages.to_sentence
+    value_messages = clone.custom_field_values.flat_map { |value| value.errors.full_messages }
+    clone.errors.delete(:custom_field_values) if value_messages.any?
+    (clone.errors.full_messages + value_messages).to_sentence
   end
 
   # The clone's status: the source's when the editor offers it, else pending (a trashed source), and a
