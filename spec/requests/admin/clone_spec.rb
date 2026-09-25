@@ -81,6 +81,28 @@ RSpec.describe 'cloning a post' do
     expect(cloned_post.get_field_value('subtitle')).to eq('Sub')
   end
 
+  it 'clones a trashed post as pending, not into the trash' do
+    @post.update!(status: 'trash')
+
+    get clone_path
+
+    expect(cloned_post.status).to eq('pending')
+  end
+
+  it 'clones an autosave buffer as a draft of its own, not as a second buffer of its parent' do
+    buffer = @post.post_type.posts.create!(title: 'Buffer', slug: 'buffer', content: 'Autosaved', status: 'draft_child',
+                                           post_parent: @post.id, user_id: @post.user_id)
+    @existing_ids = @site.posts.pluck(:id)
+
+    get "/admin/plugins/camaleon_post_clone/clone/#{buffer.id}"
+
+    copy = cloned_post
+    expect(copy.status).to eq('draft')
+    expect(copy.post_parent).to be_nil
+    expect(copy.content).to eq('Autosaved')
+    expect(@post.reload.drafts).to contain_exactly(buffer)
+  end
+
   it 'refuses a post of another site' do
     other_post = create(:site).decorate.the_post('sample-post')
 
