@@ -9,6 +9,10 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     i = %i[term_relationships metas]
     i << :custom_field_values if @plugin.get_field_value('plugin_clone_custom_fields')
     post = current_site.posts.find(params[:id])
+    # Cloning reads the source and creates a post of its type, so it needs the rights the editor needs
+    # for edit and new; the plugin permission the base controller checks is not enough on its own.
+    authorize! :update, post
+    authorize! :create_post, post.post_type
     clone = post.deep_clone(include: i)
     clone.post_type = post.post_type
     slugs = clone.slug.translations
