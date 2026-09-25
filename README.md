@@ -16,3 +16,21 @@ bundle install
 * Restart Server and activate the plugin: Admin -> plugins -> Camaleon Post Clone
 * Configure the plugin by 'Settings' below the plugin title
 * Edit any content and clone with the option in the right bar
+
+## Development
+
+The suite runs against a camaleon_cms-backed dummy Rails app under `spec/` (the Ruby version comes
+from `.tool-versions`):
+
+```bash
+bundle install
+(cd spec/dummy && RAILS_ENV=test bin/rails db:test:prepare)
+bin/rspec
+```
+
+Lint with the same configuration CI enforces:
+
+```bash
+bin/rubocop
+```
+
