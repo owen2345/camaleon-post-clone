@@ -4,7 +4,7 @@
 # holding the two options its on_active hook registers.
 class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAdminController
   include Plugins::CamaleonPostClone::MainHelper
-  # Confines a submitted field_options to the slugs the plugin registered (see settings_save).
+  # Confines a submitted field_options to the slugs registered for plugins (see settings_save).
   include CamaleonCms::Admin::CustomFieldsConcern
 
   def clone # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
@@ -35,7 +35,7 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
   def settings; end
 
   def settings_save
-    # Only the plugin's registered settings are stored, as camaleon_cms's own admin controllers do.
+    # Only settings registered for plugins are stored, as camaleon_cms's own admin controllers do.
     if params[:field_options].present?
       index_array_values
       @plugin.set_field_values(hash_shaped(cama_permitted_field_options('Plugin')))

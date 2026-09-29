@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-### Security: the settings form stores only the plugin's own settings
+### Security: the settings form stores only settings registered for plugins
 
 Saving the plugin settings stored a value under any submitted slug and answered 500 to a malformed `field_options`; the values are now confined to the settings registered for plugins, as camaleon_cms's own admin forms confine theirs; the checkboxes the settings form submits as `values[]` are still stored. Admin-gated before and after. [#3](https://github.com/owen2345/camaleon-post-clone/pull/3).
 
