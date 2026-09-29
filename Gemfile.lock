@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     camaleon_post_clone (0.0.1)
+      camaleon_cms (>= 2.9.4)
       deep_cloneable
       rails
 

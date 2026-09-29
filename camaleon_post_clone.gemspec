@@ -22,6 +22,9 @@ Gem::Specification.new do |s|
   # No test_files: RubyGems merges it into `files`, which would ship the test suite to users.
   s.files = Dir['{app,config,db,lib}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
 
+  # The settings save confines its values through CamaleonCms::Admin::CustomFieldsConcern, and 2.9.4 is
+  # the oldest camaleon_cms the suite runs against.
+  s.add_dependency 'camaleon_cms', '>= 2.9.4'
   s.add_dependency 'deep_cloneable'
   s.add_dependency 'rails'
 end
