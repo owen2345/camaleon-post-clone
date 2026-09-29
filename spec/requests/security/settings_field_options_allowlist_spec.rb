@@ -43,4 +43,24 @@ RSpec.describe 'saving the plugin settings stores only its registered fields' do
     expect(response).to redirect_to(settings_path)
     expect(plugin.custom_field_values).to be_empty
   end
+
+  context 'with a list where a group or a field belongs' do
+    let(:entry) { { 'id' => field.id.to_s, 'values' => { '0' => '0' } } }
+
+    before { enable_plugin_setting(plugin, 'plugin_clone_save_as_pending') }
+
+    it 'answers a group sent as a list and keeps the stored settings' do
+      post settings_path, params: { field_options: { '0' => [{ 'plugin_clone_save_as_pending' => entry }] } }
+
+      expect(response).to redirect_to(settings_path)
+      expect(plugin.custom_field_values.pluck(:custom_field_slug, :value)).to eq([%w[plugin_clone_save_as_pending 1]])
+    end
+
+    it 'answers a field sent as a list and keeps the stored settings' do
+      post settings_path, params: { field_options: { '0' => { 'plugin_clone_save_as_pending' => [entry] } } }
+
+      expect(response).to redirect_to(settings_path)
+      expect(plugin.custom_field_values.pluck(:custom_field_slug, :value)).to eq([%w[plugin_clone_save_as_pending 1]])
+    end
+  end
 end

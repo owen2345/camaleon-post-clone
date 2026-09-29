@@ -38,7 +38,7 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     # Only the plugin's registered settings are stored, as camaleon_cms's own admin controllers do.
     if params[:field_options].present?
       index_array_values
-      @plugin.set_field_values(cama_permitted_field_options('Plugin'))
+      @plugin.set_field_values(hash_shaped(cama_permitted_field_options('Plugin')))
     end
     flash[:notice] = t('plugin.post_clone.message.settings_saved').to_s
     redirect_to action: :settings
@@ -63,5 +63,14 @@ class Plugins::CamaleonPostClone::AdminController < CamaleonCms::Apps::PluginsAd
     return unless field.is_a?(ActionController::Parameters) && field[:values].is_a?(Array)
 
     field[:values] = field[:values].each_with_index.to_h { |value, index| [index.to_s, value] }
+  end
+
+  # camaleon_cms 2.9.4 permits a list where a group or a field belongs (field_options[0][][<slug>][id]),
+  # and set_field_values raises on one. Only hash-shaped groups and fields are handed over, and a group
+  # left empty is dropped, since set_field_values deletes the stored values before it writes.
+  def hash_shaped(permitted)
+    permitted.select { |_group, fields| fields.is_a?(Hash) }
+             .transform_values { |fields| fields.select { |_slug, field| field.is_a?(Hash) } }
+             .reject { |_group, fields| fields.empty? }
   end
 end
