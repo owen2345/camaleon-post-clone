@@ -30,6 +30,19 @@ RSpec.describe 'the camaleon_post_clone admin settings' do
     expect(plugin.get_field_value('plugin_clone_custom_fields')).to be_nil
   end
 
+  # An unchecked checkbox submits nothing, so the form with both options off carries only each field's
+  # id and group number.
+  it 'clears a stored option the form submits unchecked' do
+    enable_plugin_setting(plugin, 'plugin_clone_save_as_pending')
+    fields = plugin.get_field_groups.find_by!(slug: 'plugin_clone_custom_settings').fields
+    unchecked = fields.to_h { |field| [field.slug, { 'id' => field.id.to_s, 'group_number' => '0' }] }
+
+    post settings_path, params: { field_options: { '0' => unchecked } }
+
+    expect(response).to redirect_to(settings_path)
+    expect(plugin.reload.custom_field_values).to be_empty
+  end
+
   it 'refuses the page while the plugin is inactive' do
     plugin_uninstall('camaleon_post_clone')
 
