@@ -49,18 +49,24 @@ RSpec.describe 'saving the plugin settings stores only fields registered for plu
 
     before { enable_plugin_setting(plugin, 'plugin_clone_save_as_pending') }
 
+    # Reloaded, since enable_plugin_setting leaves the spec's plugin with its values loaded, and pluck
+    # answers from a loaded association without asking the database.
+    def stored_settings
+      plugin.reload.custom_field_values.pluck(:custom_field_slug, :value)
+    end
+
     it 'answers a group sent as a list and keeps the stored settings' do
       post settings_path, params: { field_options: { '0' => [{ 'plugin_clone_save_as_pending' => entry }] } }
 
       expect(response).to redirect_to(settings_path)
-      expect(plugin.custom_field_values.pluck(:custom_field_slug, :value)).to eq([%w[plugin_clone_save_as_pending 1]])
+      expect(stored_settings).to eq([%w[plugin_clone_save_as_pending 1]])
     end
 
     it 'answers a field sent as a list and keeps the stored settings' do
       post settings_path, params: { field_options: { '0' => { 'plugin_clone_save_as_pending' => [entry] } } }
 
       expect(response).to redirect_to(settings_path)
-      expect(plugin.custom_field_values.pluck(:custom_field_slug, :value)).to eq([%w[plugin_clone_save_as_pending 1]])
+      expect(stored_settings).to eq([%w[plugin_clone_save_as_pending 1]])
     end
   end
 end
