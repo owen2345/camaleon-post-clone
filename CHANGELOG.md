@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Tooling: CI runs the suite against Camaleon master
+
+An advisory check runs the suite against the `master` branch of camaleon_cms, on each pull request and each push to `master`. The RSpec check of CI shows the camaleon_cms version that it tests. Development tooling only. [#5](https://github.com/owen2345/camaleon-post-clone/pull/5).
+
 ### Fix: cloning keeps the title translations, and the custom fields option works
 
 A translated post cloned with the plugin got each title translation replaced by the slug translation plus " (clone)"; the title translation now gets the suffix. With "Clone custom fields" enabled, cloning raised because the plugin named `field_values`, an association camaleon_cms 2.8.0 renamed to `custom_field_values`; the custom field values are copied again. [#2](https://github.com/owen2345/camaleon-post-clone/pull/2).
