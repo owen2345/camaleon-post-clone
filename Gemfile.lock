@@ -3,7 +3,7 @@ PATH
   specs:
     camaleon_post_clone (0.0.1)
       deep_cloneable
-      rails
+      rails (>= 6.1)
 
 GEM
   remote: https://rubygems.org/
